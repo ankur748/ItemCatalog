@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block title %}{% endblock %}
+{% block content %}
+    <h1><a href="{{url_for('showCatalog')}}">Application Catalog</a></h1>
+    <br>
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Categories</h2>
+            <h3><a href="{{url_for('addCategory')}}">Add Category</a></h3>
+
+            {% for category in categories %}
+            <p>
+                <a href="{{url_for('showCategoryCatalog', category_id = category.id)}}" class="btn btn-outline-primary active" role="button" aria-pressed="true">{{category.name}}</a>
+                <a href="{{url_for('editCategory', category_id = category.id)}}" class="btn btn-outline-warning btn-sm active" role="button" aria-pressed="true">Edit</a>
+                <a href="{{url_for('deleteCategory', category_id = category.id)}}" class="btn btn-outline-danger btn-sm active" role="button" aria-pressed="true">Delete</a>
+            </p>
+            {% endfor %}
+        </div>
+        <div class="col-md-6">
+            <h2>{{selected_category}} Items</h2>
+            <h3><a href="{{url_for('addCategoryItem', selected_category = selected_category)}}">Add Item</a></h3>
+
+            {% for item in items %}
+            <p>
+                <a href="{{url_for('showItemDetail', category_item_id = item.id)}}">{{item.name}}</a>
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

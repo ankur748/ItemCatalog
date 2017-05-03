@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %} - Edit Item{% endblock %}
+{% block content %}
+    <h2>Edit Item</h2>
+
+    <form method="POST" action="{{url_for('editCategoryItem', category_item_id = category_item.id)}}">
+        <div class="form-group">
+            <label for="item_name">Item Name</label>
+            <input type="text" class="form-control" name="item_name" id="item_name" value="{{category_item.name}}">
+        </div>
+        <div class="form-group">
+            <label for="item_description">Item Description</label>
+            <textarea class="form-control" name="item_description" id="item_description" rows="2">{{category_item.description}}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="category_id">Category</label>
+            <select class="form-control" id="category_id" name="category_id">
+                {% for category in categories %}
+                    {% if category_item.category_id != category.id %}
+                        <option value="{{category.id}}">{{category.name}}</option>
+                    {% else %}
+                        <option value="{{category.id}}" selected="true">{{category.name}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+{% endblock %}

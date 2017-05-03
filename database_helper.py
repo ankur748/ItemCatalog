@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import User,Category,CategoryItem
+from database_setup import Base,User,Category,CategoryItem
 
 engine      = create_engine('sqlite:///ItemCatalog.db')
 Base.metadata.bind=engine
@@ -35,9 +35,14 @@ def edit_category(category_id, category_name):
 
 def delete_category(category_id):
 
+    category_items  = get_items_by_category(category_id)
     category        = get_category_by_id(category_id)
 
+    for item in category_items:
+        session.delete(category_items)
+
     session.delete(category)
+    
     session.commit()
 
 def get_items_by_category(category_id):
@@ -62,8 +67,6 @@ def edit_category_item(category_item_id, item_name, item_description, category_i
 
     session.add(category_item)
     session.commit()
-
-    return category
 
 def delete_category_item(category_item_id):
 

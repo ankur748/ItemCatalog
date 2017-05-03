@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block title %} - Add a Item{% endblock %}
+{% block content %}
+    <h1>Add a Item</h1>
+
+    <form method="POST" action="{{url_for('addCategoryItem', selected_category = selected_category)}}">
+        <div class="form-group">
+            <label for="item_name">Item Name</label>
+            <input type="text" class="form-control" name="item_name" id="item_name" placeholder="Enter Item name">
+        </div>
+        <div class="form-group">
+            <label for="item_description">Item Description</label>
+            <textarea class="form-control" name="item_description" id="item_description" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="category_id">Category</label>
+            <select class="form-control" id="category_id" name="category_id">
+                {% for category in categories %}
+                    {% if selected_category != category.name %}
+                        <option value="{{category.id}}">{{category.name}}</option>
+                    {% else %}
+                        <option value="{{category.id}}" selected="true">{{category.name}}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Create</button>
+    </form>
+{% endblock %}

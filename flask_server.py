@@ -4,14 +4,15 @@ from database_helper import *
 
 app         = Flask(__name__)
 
-@app.route('/')
-@app.route('/catalog/')
-def showCatalog():
+@app.route('/', defaults={'selected_category': 'Latest'})
+@app.route('/catalog/', defaults={'selected_category': 'Latest'})
+@app.route('/catalog/<selected_category>')
+def showCatalog(selected_category):
 
     categories  = get_all_categories()
     items       = get_latest_items()
 
-    return render_template('catalog.html', categories = categories, items = items, selected_category = None)
+    return render_template('catalog.html', categories = categories, items = items, selected_category = selected_category)
 
 @app.route('/addcategory/', methods=['POST', 'GET'])
 def addCategory():
@@ -21,8 +22,7 @@ def addCategory():
         category_name   = request.form["category_name"]
         category        = add_category(category_name)
 
-        return render_template('catalog.html', categories = categories, items = items, 
-                                    selected_category = category)
+        return redirect(url_for('showCatalog', selected_category = category.name))
 
     else:
 
@@ -36,8 +36,7 @@ def editCategory(category_id):
         category_name   = request.form["category_name"]
         category        = edit_category(category_id, category_name)
 
-        return render_template('catalog.html', categories = categories, items = items, 
-                                    selected_category = category)
+        return redirect(url_for('showCatalog', selected_category = category.name))
 
     else:
 
@@ -65,10 +64,16 @@ def showCategoryCatalog(category_id):
     selected_category   = get_category_by_id(category_id)
 
     return render_template('catalog.html', categories = categories, items = items
-                                        , selected_category = selected_category)
+                                        , selected_category = selected_category.name)
 
-@app.route('/addcategoryitem/', methods=['POST', 'GET'])
-def addCategoryItem():
+@app.route('/showitemdetail/<int:category_item_id>')
+def showItemDetail(category_item_id):
+
+    category_item = get_category_item_by_id(category_item_id)
+    return render_template('item.html', category_item = category_item)
+
+@app.route('/addcategoryitem/<selected_category>', methods=['POST', 'GET'])
+def addCategoryItem(selected_category):
 
     if request.method == 'POST':
 
@@ -81,10 +86,12 @@ def addCategoryItem():
         return redirect(url_for('showCategoryCatalog', category_id = category_id))
 
     else:
+        categories          = get_all_categories()
 
-        return render_template('add_category_item.html')
+        return render_template('add_category_item.html', categories = categories
+                                    , selected_category = selected_category)
 
-@app.route('/editcategory/<int:category_item_id>/', methods=['POST', 'GET'])
+@app.route('/editcategoryitem/<int:category_item_id>/', methods=['POST', 'GET'])
 def editCategoryItem(category_item_id):
     
     if request.method == 'POST':
@@ -99,10 +106,13 @@ def editCategoryItem(category_item_id):
 
     else:
 
-        category_item = get_category_item_by_id(category_item_id)
-        return render_template('edit_category_item.html', category_item = category_item)
+        categories          = get_all_categories()
+        category_item       = get_category_item_by_id(category_item_id)
 
-@app.route('/deletecategory/<int:category_item_id>/', methods=['POST', 'GET'])
+        return render_template('edit_category_item.html', categories = categories, 
+                                    category_item = category_item)
+
+@app.route('/deletecategoryitem/<int:category_item_id>/', methods=['POST', 'GET'])
 def deleteCategoryItem(category_item_id):
     
     if request.method == 'POST':
