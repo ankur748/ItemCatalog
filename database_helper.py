@@ -7,6 +7,18 @@ Base.metadata.bind=engine
 DBSession   = sessionmaker(bind = engine)
 session     = DBSession()
 
+def add_new_user(name, email, picture):
+    user = User(name = name, email = email, picture = picture)
+    session.add(user)
+    session.commit()
+
+def get_user_by_email(email):
+    try:
+        user = session.query(User).filter_by(email = email).one()
+        return user
+    except:
+        return None
+
 def get_all_categories():
     return session.query(Category).all()
 
