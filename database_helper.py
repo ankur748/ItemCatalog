@@ -7,10 +7,11 @@ Base.metadata.bind=engine
 DBSession   = sessionmaker(bind = engine)
 session     = DBSession()
 
-def add_new_user(name, email, picture):
-    user = User(name = name, email = email, picture = picture)
+def add_new_user(login_session):
+    user = User(name =login_session['username'], email = login_session['email'], picture = login_session['picture'])
     session.add(user)
     session.commit()
+    return get_user_by_email(email)
 
 def get_user_by_email(email):
     try:

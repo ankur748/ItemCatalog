@@ -103,8 +103,7 @@ def gconnect():
     user = get_user_by_email(login_session['email'])
 
     if not user:
-        add_new_user(login_session['username'], login_session['email'], login_session['picture'])
-        user = get_user_by_email(login_session['email'])
+        user = add_new_user(login_session)
     
     login_session['user_id'] = user.id
 
@@ -246,11 +245,9 @@ def disconnect():
         del login_session['picture']
         del login_session['user_id']
         del login_session['provider']
-        flash("You have successfully been logged out.")
-        return redirect(url_for('list_all_restaurants'))
+        return redirect(url_for('showCatalog'))
     else:
-        flash("You were not logged in")
-        return redirect(url_for('list_all_restaurants'))
+        return redirect(url_for('showCatalog'))
 
 @app.route('/', defaults={'selected_category': 'Latest'})
 @app.route('/catalog/', defaults={'selected_category': 'Latest'})
