@@ -14,6 +14,16 @@ class User(Base):
     email           = Column(String(200), unique = True, nullable = False)
     picture         = Column(String(200))
 
+    @property
+    def serialize(self):
+
+        return {
+            'id'        : self.id,
+            'name'      : self.name,
+            'email'     : self.email,
+            "picture"   : self.picture
+        }
+
 #This table will store all the categories used in the application
 class Category(Base):
     __tablename__   = "category"
@@ -22,6 +32,15 @@ class Category(Base):
     name            = Column(String(200), unique = True, nullable = False)
     created_by_id   = Column(Integer, ForeignKey('user.id'))
     created_by      = relationship(User)
+
+    @property
+    def serialize(self):
+
+        return {
+            'id'                : self.id,
+            'name'              : self.name,
+            'created_by_id'     : self.created_by_id
+        }
 
 #This table will store items respective to a particular category stored in application
 class CategoryItem(Base):
@@ -34,6 +53,17 @@ class CategoryItem(Base):
     created_by      = relationship(User)
     category_id     = Column(Integer, ForeignKey('category.id'))
     category        = relationship(Category)
+
+    @property
+    def serialize(self):
+
+        return {
+            'id'                : self.id,
+            'name'              : self.name,
+            'description'       : self.description,
+            'category_id'       : self.category_id,
+            'created_by_id'     : self.created_by_id
+        }
 
 engine = create_engine('sqlite:///ItemCatalog.db')
 Base.metadata.create_all(engine)

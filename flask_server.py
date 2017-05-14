@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, request, url_for
+from flask import Flask, render_template, flash, redirect, request, url_for, jsonify
 from database_setup import *
 from database_helper import *
 
@@ -23,6 +23,7 @@ def user_logged_in(function):
         if 'logged_in' in session:
             return function(*args, **kwargs)
         else:
+            flash('Please login to continue')
             return redirect(url_for('login'))
     return wrapper
 
@@ -32,6 +33,7 @@ def can_edit_category(function):
     def wrapper(*args, **kwargs):
 
         if not 'logged_in' in session:
+            flash('Please login to continue')
             return redirect(url_for('login'))
 
         category_id = kwargs.get('category_id')
@@ -40,6 +42,7 @@ def can_edit_category(function):
         if category and session['user_id'] == category.created_by_id:
             return function(*args, **kwargs)
         else:
+            flash('You are not authorized to access this resource')
             return redirect(url_for('showCatalog'))
     return wrapper
 
@@ -49,6 +52,7 @@ def can_edit_category_item(function):
     def wrapper(*args, **kwargs):
 
         if not 'logged_in' in session:
+            flash('Please login to continue')
             return redirect(url_for('login'))
 
         category_item_id    = kwargs.get('category_item_id')
@@ -57,6 +61,7 @@ def can_edit_category_item(function):
         if category_item and session['user_id'] == category_item.created_by_id:
             return function(*args, **kwargs)
         else:
+            flash('You are not authorized to access this resource')
             return redirect(url_for('showCategoryCatalog', category_id = category_item.category_id))
     return wrapper
 
@@ -88,7 +93,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('google_client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:
@@ -118,7 +123,7 @@ def gconnect():
         return response
 
     # Verify that the access token is valid for this app.
-    if result['issued_to'] != json.loads(open('client_secrets.json', 'r').read())['web']['client_id']:
+    if result['issued_to'] != json.loads(open('google_client_secrets.json', 'r').read())['web']['client_id']:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
         print "Token's client ID does not match app's."
@@ -427,6 +432,49 @@ def deleteCategoryItem(category_item_id):
         return render_template('delete_category_item.html', category_item = category_item)
 
 #business logic handlers end
+
+#json endpoints handlers start
+
+@app.route('/categories/JSON')
+def getCategoriesJSON():
+    categories = get_all_categories()
+    return jsonify(categories = [cat.serialize for cat in categories])
+
+@app.route('/users/JSON')
+def getUsersJSON():
+    users = get_all_users()
+    return jsonify(users = [user.serialize for user in users])
+
+@app.route('/items/JSON')
+def getItemsJSON():
+    items = get_all_items()
+    return jsonify(items = [item.serialize for item in items])
+
+@app.route('/items/<int:category_id>/JSON')
+def getCategoryItemsJSON(category_id):
+    items = get_items_by_category(category_id)
+    return jsonify(items = [item.serialize for item in items])
+
+@app.route('/alldata/JSON')
+def getAllDataJSON():
+    
+    categories = get_all_categories()
+
+    category_data = []
+
+    for cat in categories:
+
+        data            = cat.serialize
+
+        items           = get_items_by_category(cat.id)
+        items_data      = [item.serialize for item in items]
+        data['items']   = items_data
+        
+        category_data.append(data)
+
+    return jsonify(categories = category_data)
+
+#json endpoints handlers end
 
 if __name__ == '__main__':
     app.secret_key = "Item Catalog Super Secret Key"

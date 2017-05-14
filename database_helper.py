@@ -23,6 +23,12 @@ def get_user_by_email(email):
 def get_all_categories():
     return session.query(Category).all()
 
+def get_all_users():
+    return session.query(User).all()
+
+def get_all_items():
+    return session.query(CategoryItem).all()
+
 def get_latest_items(pagesize = 10):
     return session.query(CategoryItem).order_by(CategoryItem.id.desc()).limit(pagesize)
 
