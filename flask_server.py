@@ -24,7 +24,7 @@ APPLICATION_NAME = "Application Catalog"
 def user_logged_in(function):
     @wraps(function)
     def wrapper (*args, **kwargs):
-        if 'user_id' in session:
+        if 'logged_in' in session:
             return function(*args, **kwargs)
         else:
             return redirect(url_for('login'))
@@ -35,7 +35,7 @@ def can_edit_category(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
 
-        if 'user_id' not in session:
+        if not 'logged_in' in session:
             return redirect(url_for('login'))
 
         category_id = kwargs.get('category_id')
@@ -52,7 +52,7 @@ def can_edit_category_item(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
 
-        if 'user_id' not in session:
+        if not 'logged_in' in session:
             return redirect(url_for('login'))
 
         category_item_id    = kwargs.get('category_item_id')
@@ -79,6 +79,7 @@ def login():
     
     return render_template('login.html', STATE = state)
 
+#used for google plus sign in
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -170,6 +171,7 @@ def gconnect():
     flash("you are now logged in as %s" % session['username'])
     return output
 
+#used for disconnecting from google plus
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = session['access_token']
@@ -196,6 +198,7 @@ def gdisconnect():
     	response.headers['Content-Type'] = 'application/json'
     	return response
 
+#used to connect with fb login
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
     if request.args.get('state') != session['state']:
