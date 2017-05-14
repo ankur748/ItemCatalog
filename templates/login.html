@@ -9,21 +9,26 @@
 </head>
 <body class="container">
   <h1><a href="{{url_for('showCatalog')}}">Application Catalog</a></h1>
-  <br>
-<!-- GOOGLE PLUS SIGN IN BUTTON-->     
-          <div id="signInButton">
-          <span class="g-signin"
-            data-scope="openid email"
-            data-clientid="481389322843-ne53prp8enafe0v3nd3lks7qtrr9ja81.apps.googleusercontent.com"
-            data-redirecturi="postmessage"
-            data-accesstype="offline"
-            data-cookiepolicy="single_host_origin"
-            data-callback="signInCallback"
-            data-approvalprompt="force">
-          </span>
-        </div>
+  <br>    
+  <div id="signInButton">
+    <span class="g-signin"
+      data-scope="openid email"
+      data-clientid="481389322843-ne53prp8enafe0v3nd3lks7qtrr9ja81.apps.googleusercontent.com"
+      data-redirecturi="postmessage"
+      data-accesstype="offline"
+      data-cookiepolicy="single_host_origin"
+      data-callback="signInCallback"
+      data-approvalprompt="force">
+    </span>
+  </div>
 
-        <p id="result"></p>
+  <button>
+    <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+      <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+    </fb:login-button>
+  </button>
+
+  <p id="result"></p>
 
 <script>
 function signInCallback(authResult) {
@@ -106,18 +111,6 @@ function signInCallback(authResult) {
     });
   }
 </script>
-
-<button>
-         
-
-<fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
-  <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
-
-</fb:login-button>
-
-
-</button>
-<!--END FACEBOOK SIGN IN -->
 
 </body>
 </html>

@@ -11,7 +11,7 @@ def add_new_user(login_session):
     user = User(name =login_session['username'], email = login_session['email'], picture = login_session['picture'])
     session.add(user)
     session.commit()
-    return get_user_by_email(email)
+    return get_user_by_email(login_session['email'])
 
 def get_user_by_email(email):
     try:
@@ -26,7 +26,7 @@ def get_all_categories():
 def get_latest_items(pagesize = 10):
     return session.query(CategoryItem).order_by(CategoryItem.id.desc()).limit(pagesize)
 
-def add_category(category_name, user_id = 1):
+def add_category(category_name, user_id):
     category = Category(name = category_name, created_by_id = user_id)
     session.add(category)
     session.commit()
@@ -61,7 +61,7 @@ def delete_category(category_id):
 def get_items_by_category(category_id):
     return session.query(CategoryItem).filter_by(category_id = category_id).all()
 
-def add_category_item(item_name, item_description, category_id, user_id = 1):
+def add_category_item(item_name, item_description, category_id, user_id):
     category_item = CategoryItem(name = item_name, description = item_description, 
                                 category_id = category_id, created_by_id = user_id)
     session.add(category_item)

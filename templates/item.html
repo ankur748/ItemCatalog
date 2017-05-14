@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block title %} - {{category_item.name}}{% endblock %}
 {% block content %}
+    <a href="{{url_for('showCategoryCatalog', category_id = category_item.category_id)}}">Back to Collection</a>
+    <br>
     <h2>{{category_item.name}}</h2>
     <p>{{category_item.description}}</p>
 
