@@ -16,10 +16,6 @@ import requests
 
 app         = Flask(__name__)
 
-CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Application Catalog"
-
 #decorators start
 def user_logged_in(function):
     @wraps(function)
@@ -66,7 +62,7 @@ def can_edit_category_item(function):
 
 #decorators end
 
-#handlers start
+#login handlers start
 @app.route('/login/')
 def login():
 
@@ -122,7 +118,7 @@ def gconnect():
         return response
 
     # Verify that the access token is valid for this app.
-    if result['issued_to'] != CLIENT_ID:
+    if result['issued_to'] != json.loads(open('client_secrets.json', 'r').read())['web']['client_id']:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
         print "Token's client ID does not match app's."
@@ -301,6 +297,9 @@ def logout():
         del session['logged_in']
     return redirect(url_for('showCatalog'))
 
+# login handlers end
+
+#business logic handlers start
 @app.route('/')
 @app.route('/catalog/')
 def showCatalog():
@@ -427,7 +426,7 @@ def deleteCategoryItem(category_item_id):
         category_item = get_category_item_by_id(category_item_id)
         return render_template('delete_category_item.html', category_item = category_item)
 
-#handlers end
+#business logic handlers end
 
 if __name__ == '__main__':
     app.secret_key = "Item Catalog Super Secret Key"
